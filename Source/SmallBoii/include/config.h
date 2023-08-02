@@ -21,9 +21,8 @@
 #define sensorPin3 20
 #define sensorPin4 21
 #define sensorAnalogInput 28 
+#define number_of_sensors 3
 
-/*Servo*/
-#define servoPWM 1
 
 
 
