@@ -2,15 +2,25 @@ clc
 clear variables
 close all
 %%
-map = generate_map(9, 10000, 2000, 30, 500);
+%load('map.mat');
+% map = mapForSim.lineFollowingMap;
+% map = imread('map_small.jpg');
+% map = im2gray(map);
+% map = im2bw(map);
+% map = double(map);
+% map = imcomplement(map);
+% map = flipud(map);
+% imshow(map)
+clc
+path = generate_map(9,10000,2000,30,5000);
 
-figure;
-map = im2gray(map);
-map = im2bw(map);
-map = double(map);
-map = imcomplement(map);
-map = flipud(map);
-imshow(map)
+ figure;
+ map = im2gray(map);
+ map = im2bw(map);
+ map = double(map);
+ map = imcomplement(map);
+ map = flipud(map);
+ imshow(map)
 %%
 clc
 close all
@@ -24,6 +34,9 @@ spacing = 6;                            %Spacing between sensors
 length_body = 15;                       %distance between center and centor of sensors
 
 plots = 'sensor';   
+%plots = 'values';
+%plots = 'all';
+
 out = sim('simLink_line');
 
 out0 = out.simout.signals.values;  %States [x,y,theta]
@@ -42,8 +55,8 @@ sensor_y = 2;
 if(strcmp(plots,'sensor')||strcmp(plots,'all'))
     figure;
     RI = imref2d(size(map));
-    RI.XWorldLimits = [0 length(map(:,1))];
-    RI.YWorldLimits = [0 length(map(:,2))];
+    RI.XWorldLimits = [0 500];
+    RI.YWorldLimits = [0 500];
     for i=1:length(out0)
         imshow(imcomplement(map),RI);
         set(gca,'YDir','normal')
@@ -62,6 +75,20 @@ if(strcmp(plots,'sensor')||strcmp(plots,'all'))
         pause(0.001);
     end
 end
+
+if(strcmp(plots,'values')||strcmp(plots,'all'))
+    figure;
+    plot(out3(1,:),out.simout3.time)
+    hold on
+    plot(out3(2,:),out.simout3.time)
+    plot(out3(3,:),out.simout3.time)
+    plot(out3(4,:),out.simout3.time)
+    plot(out3(5,:),out.simout3.time)
+    plot(out3(6,:),out.simout3.time)
+    plot(out3(7,:),out.simout3.time)
+    legend('sensor 1', 'sensor 2', 'sensor 3', 'sensor 4', 'sensor 5', 'sensor 6', 'sensor 7');
+end
+
 
 
 
