@@ -107,7 +107,7 @@ plot([max_x,max_x],[max_y,min_y],'k')
 plot([max_x,min_x],[min_y,min_y],'k')
 plot([min_x,min_x],[min_y,max_y],'k')
 hold off
-legend('','Path for map','Generated points','Start location', 'Min/Max value box around the path');
+legend('Generated points','Path for map','Generated lines','Start location', 'Min/Max value box around the path');
 axis equal
 title('Path');
 
