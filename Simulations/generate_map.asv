@@ -1,4 +1,4 @@
-function [map, min_x, min_y, max_x, max_y, start_x, start_y, start_angle] = generate_map(nr_points, nr_spline_pts, map_offset, angle_cutoff, padding, size_path_line);
+function [map, min_x, min_y, max_x, max_y, start_x, start_y, start_angle] = generate_map(nr_points, nr_spline_pts, map_offset, angle_cutoff, padding, sensor_size);
 % 
 % Note: This function will take in some inputs and generate a random map
 % done with a sett of points around a circle with random magnitude. Between
@@ -13,14 +13,12 @@ function [map, min_x, min_y, max_x, max_y, start_x, start_y, start_angle] = gene
 % spline curve between 3 points is "too sharp".
 % 
 % Input -----
-% nr_points: Nr of points to be generated on a circle, these are the points
-% to have a random magnitude.
-% nr_spline_pts: Nr of spline points to add add between all the generated
-% pts.
-% map_offset: Offset so that the map is not centerd around (0,0)
-% angle_cutoff: At what angle to recalculate the first set of points(degrees)
-% padding: NOT IN USE
-% size_path_line: size of the generated line to follow(given in nr pixels)
+% nr_points: Nr of points to be gener
+% nr_spline_pts: 
+% map_offset: 
+% angle_cutoff: 
+% padding: 
+% sensor_size:
 % 
 % Output ----- 
 % map: 
@@ -38,7 +36,7 @@ u = zeros(10,3);
 v = zeros(10,3);
 j = 0;
 mag_min = 500;
-mag_max = 2500;
+mag_max = 3000;
 map_size_x = 5000;
 map_size_y = 5000;
 
@@ -85,32 +83,36 @@ pts_list(end,2) = pts_list(1,2);
 t = cumsum([0;sqrt(sum(diff(pts_list,1,1).^2,2))]);
 ti = linspace(t(1),t(end),nr_spline_pts);
 xyzi = interp1(t,pts_list,ti,'spline');
-figure;
+figure(1)
 plot(pts_list(:,1),pts_list(:,2),'or',xyzi(:,1),xyzi(:,2),'b');
 hold on
 plot(pts_list(:,1),pts_list(:,2))
 hold on
 plot(pts_list(1,1),pts_list(1,2),'*', 'LineWidth',2)
+% axis equal
+% title('Path');
+% legend('','Path for map','Generated points');
+
 map = zeros(map_size_x, map_size_y);
 path = round(xyzi);
+
 for i=1:length(path)
-    map(path(i,2) - size_path_line:path(i,2) + size_path_line, path(i,1) - size_path_line:path(i,1) + size_path_line) = 1;
+    map(path(i,2) - sensor_size:path(i,2) + sensor_size, path(i,1) - sensor_size:path(i,1) + sensor_size) = 1;
 end
-min_x = min(path(:,1))-size_path_line;
-max_x = max(path(:,1))+size_path_line;
-min_y = min(path(:,2))-size_path_line;
-max_y = max(path(:,2))+size_path_line;
+min_x = min(path(:,1))-sensor_size;
+max_x = max(path(:,1))+sensor_size;
+min_y = min(path(:,2))-sensor_size;
+max_y = max(path(:,2))+sensor_size;
 
 hold on
-plot([min_x,max_x],[max_y,max_y],'k')
-plot([max_x,max_x],[max_y,min_y],'k')
-plot([max_x,min_x],[min_y,min_y],'k')
-plot([min_x,min_x],[min_y,max_y],'k')
+plot([min_x,max_x],[max_y,max_y])
+plot([max_x,max_x],[max_y,min_y])
+plot([max_x,min_x],[min_y,min_y])
+plot([min_x,min_x],[min_y,max_y])
 hold off
-legend('','Path for map','Generated points','Start location', 'Min/Max value box around the path');
-axis equal
-title('Path');
-
+%start_y = min(xyzi(:,2));
+%start_x = round(xyzi((find(xyzi(:,2) == start_y)),1));
+%start_y = size(complete_map,2) - padding + sensor_size*1.5;
 start_x = path(1,1);;
 start_y =path(1,2);
 vector1 = [(path(50,1) - path(1,1)), (path(50,2) - path(1,2)), 0];
