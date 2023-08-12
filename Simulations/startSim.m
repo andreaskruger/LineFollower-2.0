@@ -10,7 +10,7 @@ line_size = 10;                         % Size of the line to follow in the map.
 sensor_size = 10;                       % Size of sensor in pixels
 pixel_conversion = 0.1;                 % Pixel to cm conversion
 pixel_sensor = 3;                       % pixel_sensor x pixel_sensor + 1 matrix sensor size.
-pixel_body = 10;                        % Amount of pixels for the body
+pixel_body = 8;                         % Amount of pixels for the body
 velocity_left = 80;                     % Left  wheel velocity
 velocity_right = 80;                    % Right wheel velocity
 reading_noise = 0;                      % Power of white noise added to the sensor reading
@@ -37,7 +37,7 @@ map = imcomplement(map);
 
 % Run the simulation in simulinkk
 plots = 'sensor';   
-out = sim('simLink_line');
+out = sim('simLink_linefollower');
 
 % All the saved tables from simulink
 out0 = out.simout.signals.values;  %States [x,y,theta]
@@ -64,13 +64,34 @@ if(strcmp(plots,'sensor')||strcmp(plots,'all'))
         imshow(map,RI);                                                                     % Show the map and plot ontop of it
         set(gca,'YDir','normal')
         hold on
-        xmin = out0(i,1) + offset_x -length_body;
+        rect_sensor1 = polyshape([(out2(i,1) + offset_x - sensor_size), (out2(i,1) + offset_x + sensor_size), (out2(i,1) + offset_x + sensor_size) (out2(i,1) + offset_x - sensor_size)], ...
+            [(out2(i,2) + offset_y - sensor_size), (out2(i,2) + offset_y - sensor_size), (out2(i,2) + offset_y + sensor_size), (out2(i,2) + offset_y + sensor_size),]);
+        rect_sensor2 = polyshape([(out2(i,3) + offset_x - sensor_size), (out2(i,3) + offset_x + sensor_size), (out2(i,3) + offset_x + sensor_size) (out2(i,3) + offset_x - sensor_size)], ...
+            [(out2(i,4) + offset_y - sensor_size), (out2(i,4) + offset_y - sensor_size), (out2(i,4) + offset_y + sensor_size), (out2(i,4) + offset_y + sensor_size),]);
+        rect_sensor3 = polyshape([(out2(i,5) + offset_x - sensor_size), (out2(i,5) + offset_x + sensor_size), (out2(i,5) + offset_x + sensor_size) (out2(i,5) + offset_x - sensor_size)], ...
+            [(out2(i,6) + offset_y - sensor_size), (out2(i,6) + offset_y - sensor_size), (out2(i,6) + offset_y + sensor_size), (out2(i,6) + offset_y + sensor_size),]);
+        rect_sensor4 = polyshape([(out2(i,7) + offset_x - sensor_size), (out2(i,7) + offset_x + sensor_size), (out2(i,7) + offset_x + sensor_size) (out2(i,7) + offset_x - sensor_size)], ...
+            [(out2(i,8) + offset_y - sensor_size), (out2(i,8) + offset_y - sensor_size), (out2(i,8) + offset_y + sensor_size), (out2(i,8) + offset_y + sensor_size),]);
+        rect_sensor5 = polyshape([(out2(i,9) + offset_x - sensor_size), (out2(i,9) + offset_x + sensor_size), (out2(i,9) + offset_x + sensor_size) (out2(i,9) + offset_x - sensor_size)], ...
+            [(out2(i,10) + offset_y - sensor_size), (out2(i,10) + offset_y - sensor_size), (out2(i,10) + offset_y + sensor_size), (out2(i,10) + offset_y + sensor_size),]);
+        rect_sensor6 = polyshape([(out2(i,11) + offset_x - sensor_size), (out2(i,11) + offset_x + sensor_size), (out2(i,11) + offset_x + sensor_size) (out2(i,11) + offset_x - sensor_size)], ...
+            [(out2(i,12) + offset_y - sensor_size), (out2(i,12) + offset_y - sensor_size), (out2(i,12) + offset_y + sensor_size), (out2(i,12) + offset_y + sensor_size),]);
+        rect_sensor7 = polyshape([(out2(i,13) + offset_x - sensor_size), (out2(i,13) + offset_x + sensor_size), (out2(i,13) + offset_x + sensor_size) (out2(i,13) + offset_x - sensor_size)], ...
+            [(out2(i,14) + offset_y - sensor_size), (out2(i,14) + offset_y - sensor_size), (out2(i,14) + offset_y + sensor_size), (out2(i,14) + offset_y + sensor_size),]);
+        xmin = out0(i,1) + offset_x -length_body;                                                       % Set box size for the body
         xmax = out0(i,1) + offset_x + length_body;
         ymin = out0(i,2) + offset_y - length_body;
         ymax = out0(i,2) + offset_y + length_body;
-        rect = polyshape([xmin xmax xmax xmin xmin],[ymin ymin ymax ymax ymin]);            % Plot a rectangle the size of the body
-        plot(rotate(rect,rad2deg(out1(i,3)),[out0(i,1) + offset_x,out0(i,2) + offset_y]));  % Rotate the body according to the movement
-        plot(out2(i,1) + offset_x,out2(i,2) + offset_y,'b*');                               % Print all the sensors 
+        plot(rotate(rect_sensor1,rad2deg(out1(i,3)),[out2(i,1) + offset_x,out2(i,2) + offset_y]));      % Rotate and plot a box around each sensor
+        plot(rotate(rect_sensor2,rad2deg(out1(i,3)),[out2(i,3) + offset_x,out2(i,4) + offset_y]));
+        plot(rotate(rect_sensor3,rad2deg(out1(i,3)),[out2(i,5) + offset_x,out2(i,6) + offset_y]));
+        plot(rotate(rect_sensor4,rad2deg(out1(i,3)),[out2(i,7) + offset_x,out2(i,8) + offset_y]));
+        plot(rotate(rect_sensor5,rad2deg(out1(i,3)),[out2(i,9) + offset_x,out2(i,10) + offset_y]));
+        plot(rotate(rect_sensor6,rad2deg(out1(i,3)),[out2(i,11) + offset_x,out2(i,12) + offset_y]));
+        plot(rotate(rect_sensor7,rad2deg(out1(i,3)),[out2(i,13) + offset_x,out2(i,14) + offset_y]));
+        rect_body = polyshape([xmin xmax xmax xmin],[ymin ymin ymax ymax]);                             % Create a rectangle the size of the body
+        plot(rotate(rect_body,rad2deg(out1(i,3)),[out0(i,1) + offset_x,out0(i,2) + offset_y]));         % Rotate the body according to the movement and plot it
+        plot(out2(i,1) + offset_x,out2(i,2) + offset_y,'b*');                                           % Plot all the sensors 
         plot(out2(i,3) + offset_x,out2(i,4) + offset_y,'b*');
         plot(out2(i,5) + offset_x,out2(i,6) + offset_y,'b*');
         plot(out2(i,7) + offset_x,out2(i,8) + offset_y,'b*');
@@ -78,9 +99,10 @@ if(strcmp(plots,'sensor')||strcmp(plots,'all'))
         plot(out2(i,11) + offset_x,out2(i,12) + offset_y,'b*');
         plot(out2(i,13) + offset_x,out2(i,14) + offset_y,'b*');
         plot(out0(i,1) + offset_x,out0(i,2) + offset_y,'o','MarkerFaceColor',[1,0,0]);      % Mark the center of the robot
+        plot([out0(i,1) + offset_x, out2(i,7) + offset_x],[out0(i,2) + offset_y, out2(i,8) + offset_y],'r','LineWidth',3)
         axis equal
         hold off
-        legend('','Sensor 1','Sensor 2','Sensor 3','Sensor 4','Sensor 5','Sensor 6','Sensor 7', 'Robot position')
+        legend('','','','','','','','','Sensor 1','Sensor 2','Sensor 3','Sensor 4','Sensor 5','Sensor 6','Sensor 7', 'Robot position')
         %legend('','','','','','','','', 'Robot position')
         pause(Plot_delay);
     end

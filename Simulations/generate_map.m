@@ -10,7 +10,8 @@ function [map, min_x, min_y, max_x, max_y, start_x, start_y, start_angle] = gene
 % start position will be calculated along with a direction for the robot to
 % face. 
 % As an extra saftey feature the random point will be recalculated if the
-% spline curve between 3 points is "too sharp".
+% spline curve between 3 points is "too sharp". The sharp turn detection is
+% working 50/50.
 % 
 % Input -----
 % nr_points: Nr of points to be generated on a circle, these are the points
