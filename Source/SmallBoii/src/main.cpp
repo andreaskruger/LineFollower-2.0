@@ -98,7 +98,7 @@ void setup()
 
 	// Sweep left
 	setSpeed(50, -50);
-	for (uint16_t i = 0; i < 60; i++)
+	for (uint16_t i = 0; i < 70; i++)
 	{
 		sens_meas[0] = analogRead(A0);
 		sens_meas[1] = analogRead(A1);
@@ -121,7 +121,7 @@ void setup()
 
 	// Sweep right
 	setSpeed(-50, 50);
-	for (uint16_t i = 0; i < 120; i++)
+	for (uint16_t i = 0; i < 140; i++)
 	{
 
 		sens_meas[0] = analogRead(A0);
@@ -146,7 +146,7 @@ void setup()
 
 	// Return to starting position
 	setSpeed(50, -50);
-	for (uint16_t i = 0; i < 60; i++)
+	for (uint16_t i = 0; i < 70; i++)
 	{
 		delay(10);
 	}
@@ -199,10 +199,10 @@ const float Kd = 0.4;
 int16_t base = 100;
 */
 
-const float Kp = 0.2;
+const float Kp = 0.4;
 const float Ki = 0;
-const float Kd = 0.2;
-int16_t base = 250;
+const float Kd = 0.4;
+int16_t base = 200;
 
 int16_t spd = 0;
 int16_t err = 0;
@@ -240,8 +240,6 @@ void loop()
 	spd = Kp * err + Kd * (err - prev_err);
 
 	setSpeed(base - spd, base + spd);
-
-	delay(1);
 
 	/*
 	Serial.print(sens_norm[0]);
