@@ -53,6 +53,11 @@ out4 = out.simout4.signals.values;  %Speed after control [Speed]
 %map_sensor = map(out2(1,sensor_y) + offset_y - pixel_sensor:out2(1,sensor_y) + offset_y + pixel_sensor, out2(1,sensor_x) + offset_x - pixel_sensor:out2(1,sensor_x) + offset_x + pixel_sensor);
 %imshow(map_sensor);
 
+% Initialize video options to save plots
+myVideo = VideoWriter('follow_path_video');    % open video file
+myVideo.FrameRate = 10;                        % can adjust this, 5 - 10 works well for me
+open(myVideo)                               
+
 % Plot the simulation of the robot ontop of the map.
 if(strcmp(plots,'sensor')||strcmp(plots,'all'))
     figure;
@@ -105,5 +110,10 @@ if(strcmp(plots,'sensor')||strcmp(plots,'all'))
         legend('','','','','','','','','Sensor 1','Sensor 2','Sensor 3','Sensor 4','Sensor 5','Sensor 6','Sensor 7', 'Robot position')
         %legend('','','','','','','','', 'Robot position')
         pause(Plot_delay);
+        frame = getframe(gcf);        %get frame
+        writeVideo(myVideo, frame);
     end
+
+    close(myVideo)
+
 end
