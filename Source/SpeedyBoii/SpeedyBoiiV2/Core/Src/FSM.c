@@ -9,17 +9,21 @@
 /*Includes*/
 #include "FSM.h"
 
+
+
 /*Defines*/
-#define NR_OF_SENSORS (5)							/*Number of sensors in use*/
-#define LINE_REF (1)								/*Refernce value for the line*/
-#define BASE (0.7f)									/*Base speed for motors*/
+#define NR_OF_SENSORS (5)								/*Number of sensors in use*/
+#define LINE_REF (2000)									/*Refernce value for the line*/
 #define _maxValue 5000
-#define NR_OF_CALIBRATIONS 2000						/*Number of sensor calibrations, 1 ms per nr of calibration*/
+#define NR_OF_CALIBRATIONS 2000							/*Number of sensor calibrations, 1 ms per nr of calibration*/
+
+#define BASE (0.5f*65535)								/*Base speed for motors*/
+#define MAX_SPEED (65535)								/*MAX speed for motors*/
 
 /*Variables*/
 int32_t sensor_val[NR_OF_SENSORS] = {0};				/*Variable to save sensor readings*/
-float Kp = 1.0f;
-float Kd = 0.0f;
+float Kp = 180.0f;
+float Kd = 50.0f;
 float Ki = 0.0f;
 
 int32_t num = 0;										/*Used in "get_line()"*/
@@ -28,8 +32,8 @@ int32_t denom = 0;										/*Used in "get_line()"*/
 int currentTime = 0;
 int prevTime = 0;
 
-uint16_t calibration_maximum[NR_OF_SENSORS];	    /*Maximum value from all calibrations per sensor*/
-uint16_t calibration_minimum[NR_OF_SENSORS];		/*Minimum value from all calibrations per sensor*/
+uint16_t calibration_maximum[NR_OF_SENSORS];	    	/*Maximum value from all calibrations per sensor*/
+uint16_t calibration_minimum[NR_OF_SENSORS];			/*Minimum value from all calibrations per sensor*/
 
 extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim2;
@@ -38,6 +42,8 @@ extern TIM_HandleTypeDef htim3;
 
 enum fsm_state_e {fsm_state_startup = 0, fsm_state_cal, fsm_state_wait, fsm_state_run, fsm_state_err};
 enum fsm_state_e state = fsm_state_startup;
+
+
 
 void read_sensor(){
 	for(size_t i = 0; i < NR_OF_SENSORS; i++){
@@ -48,8 +54,13 @@ void read_sensor(){
 		HAL_ADC_Start(&hadc1);
 		HAL_ADC_PollForConversion(&hadc1, 100);
 		sensor_val[i] = HAL_ADC_GetValue(&hadc1);
+	}
+}
 
-		//TODO: Ingen aning om det här stämmer, taget från git.
+void read_calibrated(){
+	read_sensor();
+	//TODO: Ingen aning om det här stämmer, taget från git.
+	for(size_t i = 0; i < NR_OF_SENSORS; i++){
 		uint16_t denominator = calibration_maximum - calibration_minimum;
 		int16_t value = 0;
 
@@ -61,7 +72,6 @@ void read_sensor(){
 		sensor_val[i] = value;
 	}
 }
-
 
 
 void cal_sensors(){
@@ -97,20 +107,25 @@ int32_t get_line(){
 		num += sensor_val[i]*(i)*1000;
 		denom += sensor_val[i];
 	}
-	return num/denom;
+	if(denom == 0){return 0;}
+	else{return num/denom;}
+
 }
 
 
-int32_t PID(int32_t error){
+int32_t PID(int32_t line_val){
+	int32_t error = LINE_REF - line_val;
 	int32_t speed = error*Kp + Kd*(error);
 	return speed;
 }
 
 void set_motor_speed(float left, float right){
-
-	int32_t leftPwm = (int32_t) (left*65535);
-	int32_t rightPwm = (int32_t) (right*65535);
-
+	if(left > MAX_SPEED){left = MAX_SPEED;}
+	if(left < -MAX_SPEED){left = -MAX_SPEED;}
+	if(right > MAX_SPEED){right = MAX_SPEED;}
+	if(right < -MAX_SPEED){right = -MAX_SPEED;}
+	int32_t leftPwm = (int32_t)left;
+	int32_t rightPwm = (int32_t)right;
 	if (leftPwm >= 0) {
 		TIM3->CCR1 = leftPwm;
 		TIM3->CCR2 = 0;
@@ -128,6 +143,7 @@ void set_motor_speed(float left, float right){
 		TIM2->CCR2 = -rightPwm;
 	}
 }
+
 
 //TODO: Slutför calibration
 //TODO: Använd calibration vid sensorläsning
@@ -154,9 +170,11 @@ void run_fsm(void){
 			state = fsm_state_run;
 			break;
 		case fsm_state_run:
-			read_sensor();
+			read_calibrated();
 			int32_t line_est = get_line();
-			set_motor_speed(0.9f, 0.9f);
+			volatile int32_t spd = PID(line_est);
+			set_motor_speed(BASE + spd, BASE - spd);
+			/*set_motor_speed(0.0f, 0.0f);*/
 			break;
 		default:
 			break;

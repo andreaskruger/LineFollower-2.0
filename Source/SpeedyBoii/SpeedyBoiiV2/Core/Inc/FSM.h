@@ -26,6 +26,13 @@
 void run_fsm(void);
 
 /**
+ * @brief clamps sensor readings to calibration min/max
+ * @note
+ * @param
+ */
+void read_calibrated();
+
+/**
  * @brief Read all sensors
  * @note
  * @param

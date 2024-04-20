@@ -1,6 +1,7 @@
-../Core/Src/FSM.c:42:6:read_sensor	5
-../Core/Src/FSM.c:67:6:cal_sensors	7
-../Core/Src/FSM.c:93:9:get_line	2
-../Core/Src/FSM.c:104:9:PID	1
-../Core/Src/FSM.c:109:6:set_motor_speed	3
-../Core/Src/FSM.c:138:6:run_fsm	6
+../Core/Src/FSM.c:48:6:read_sensor	2
+../Core/Src/FSM.c:60:6:read_calibrated	5
+../Core/Src/FSM.c:77:6:cal_sensors	7
+../Core/Src/FSM.c:103:9:get_line	3
+../Core/Src/FSM.c:116:9:PID	1
+../Core/Src/FSM.c:122:6:set_motor_speed	7
+../Core/Src/FSM.c:154:6:run_fsm	6
