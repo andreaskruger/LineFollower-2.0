@@ -1,7 +1,7 @@
-../Core/Src/FSM.c:48:6:read_sensor	16	static
-../Core/Src/FSM.c:60:6:read_calibrated	16	static
-../Core/Src/FSM.c:77:6:cal_sensors	48	static
-../Core/Src/FSM.c:103:9:get_line	16	static
-../Core/Src/FSM.c:116:9:PID	24	static
-../Core/Src/FSM.c:122:6:set_motor_speed	24	static
-../Core/Src/FSM.c:154:6:run_fsm	16	static
+../Core/Src/FSM.c:52:6:read_sensor	16	static
+../Core/Src/FSM.c:64:6:read_calibrated	24	static
+../Core/Src/FSM.c:80:6:cal_sensors	80	static
+../Core/Src/FSM.c:106:9:get_line	16	static
+../Core/Src/FSM.c:120:9:PID	32	static
+../Core/Src/FSM.c:130:6:set_motor_speed	24	static
+../Core/Src/FSM.c:163:6:run_fsm	16	static

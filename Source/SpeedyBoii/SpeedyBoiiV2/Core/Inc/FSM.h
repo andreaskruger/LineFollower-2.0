@@ -59,7 +59,7 @@ int32_t PID(int32_t);
  * @note
  * @param
  */
-void set_motor_speed(float left, float right);
+void set_motor_speed(int32_t left, int32_t right);
 
 /**
  * @brief Finds the line value
